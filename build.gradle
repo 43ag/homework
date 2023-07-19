@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.8.1'
+}
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    allureVersion = '2.14.0'
+}
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
+    implementation 'io.github.bonigarcia:webdrivermanager:4.4.3'
+    implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    implementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    implementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
+    implementation("org.junit.platform:junit-platform-suite:1.8.1")
+}
+
+test {
+    useJUnitPlatform()
+    dependsOn 'cleanTest'
+}
+
+allure {
+    autoconfigure = true
+    version = "${allureVersion}"
+
+    useTestNG {
+        version = "${allureVersion}"
+    }
+
+    apply plugin: 'checkstyle'
+    task checkstyle(type: Checkstyle) {
+        configFile file("resources/checkstyle.xml")
+        source 'src/main/java'
+        include '**/*.java'
+        exclude '**/gen/**'
+        exclude '**/R.java'
+        exclude '**/BuildConfig.java'
+        classpath = files()
+    }
+
+    tasks.withType(Checkstyle) {
+        reports {
+            xml.enabled false
+            html.enabled true
+        }
+    }
+}
