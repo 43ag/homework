@@ -18,7 +18,7 @@ public class WebDriverFactory implements WebDriverFactoryInt {
 
     public static void loadProperties() {
         try {
-            properties.load(new FileInputStream("src/test/resources/application.properties"));
+            properties.load(new FileInputStream(System.getProperty("user.dir") + "/src/test/resources/application.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

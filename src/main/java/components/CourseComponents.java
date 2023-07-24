@@ -12,9 +12,9 @@ import java.util.Optional;
 
 public class CourseComponents extends AbsBaseComponents<CourseComponents> {
     public List<WebElement> lessons =
-            driver.findElements(By.xpath("//div[contains(@class,'sc-1ftuaec-0 coFpkJ')]"));
+            driver.findElements(By.xpath("//h5"));
 
-    public List<WebElement> dates = driver.findElements(By.xpath("//span[contains(@class,'sc-12yergf-7 dPBnbE')]"));
+    public List<WebElement> dates = driver.findElements(By.xpath("//h5/parent::div/following-sibling::div/span[1]"));
 
     public CourseComponents(WebDriver driver) {
         super(driver);
@@ -27,6 +27,7 @@ public class CourseComponents extends AbsBaseComponents<CourseComponents> {
                                 webElement -> {
                                     WebElement titleWebElement =
                                             webElement.findElement(By.xpath("//h5"));
+                                    String text = titleWebElement.getText();
                                     return titleWebElement.getText().equals(title);
                                 })
                         .findFirst();
@@ -42,6 +43,7 @@ public class CourseComponents extends AbsBaseComponents<CourseComponents> {
 
             course =
                     dates.stream()
+                            .filter((WebElement element) -> !element.getText().equals("Успеть!"))
                             .reduce(
                                     dates.get(0),
                                     (webElement1, webElement2) -> {
@@ -56,6 +58,21 @@ public class CourseComponents extends AbsBaseComponents<CourseComponents> {
         }
 
         return course;
+    }
+
+    public WebElement getTitleOfCourseByDate(WebElement courseDate) {
+        Optional<WebElement> element =
+                lessons.stream()
+                .filter(
+                        webElement -> {
+                            WebElement titleWebElement =
+                                    webElement.findElement(By.xpath("//h5/parent::div/following-sibling::div/span[1]"));
+                            return titleWebElement.getText().equals(courseDate.getText());
+                        })
+                .findFirst();
+
+        Assertions.assertTrue(element.isPresent());
+        return element.get();
     }
 
     public LocalDate getDateFromCourse(WebElement webElement) {

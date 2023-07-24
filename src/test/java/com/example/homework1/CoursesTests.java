@@ -2,6 +2,7 @@ package com.example.homework1;
 
 import annotations.Driver;
 import components.CourseComponents;
+import components.CoursePageComponents;
 import extensions.UiExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,12 +17,12 @@ public class CoursesTests {
     private WebDriver driver;
 
     @Test
-    public void test1() {
+    public void selectCourseByTitle() {
         new MainPage(driver)
                 .open();
-        CourseComponents courseComponent = new CourseComponents(driver);
-        WebElement course = courseComponent.findCourseByTitle("Цифровизация и трансформация бизнеса");
+        WebElement course = new CourseComponents(driver).findCourseByTitle("Product Marketing Manager в IT");
         course.click();
+        new CoursePageComponents(driver).checkTitle("Product Marketing Manager в IT");
     }
 
     @Test
@@ -30,7 +31,10 @@ public class CoursesTests {
                 .open();
         CourseComponents courseComponent = new CourseComponents(driver);
         WebElement course = courseComponent.getCourseWithMaxDate();
+        String title = course.getText();
+        String date = title.substring((title.indexOf("С") + 4), (title.indexOf("м") - 3)).trim();
         course.click();
+        new CoursePageComponents(driver).checkDate(date);
     }
 }
 
